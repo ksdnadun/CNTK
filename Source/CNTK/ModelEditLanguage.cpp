@@ -623,7 +623,6 @@ void MELScript<ElemType>::CallFunction(const std::string& p_name, const ConfigPa
             }
             shared_ptr<LearnableParameter<ElemType>> pParamNode = std::dynamic_pointer_cast<LearnableParameter<ElemType>>(pNodes);
             std::vector<ElemType> input(100);
-            //SymmetricQuantizer<ElemType, short>* quantizer = new SymmetricQuantizer<ElemType, short>(input, 0);
             shared_ptr<SymmetricQuantizer<ElemType, short>> quantizer(new SymmetricQuantizer<ElemType, short>(input, 0));
             shared_ptr<LearnableParameterQuantized<ElemType, short>> pParamNodeQuant(new LearnableParameterQuantized<ElemType, short>(pNodes, quantizer));
 

@@ -26,11 +26,21 @@ class SymmetricQuantizer : public IQuantizerBase<RawType, QuantizedType>
 {
     RawType m_quantizer;
 public:
-    SymmetricQuantizer(std::vector<RawType> elements, const int extraBits)
+    // extraBits decreases the quantization normalizer to prevent integer overflow during BLAS routines.
+    // Higher extraBits will decrease precision of quantization, but will make BLAS routines less prone to overflow.
+    // For quantization with shorts, recommended value of extraBits is 1 or 2.
+    SymmetricQuantizer(std::vector<RawType>& elements, const int& extraBits)
     {
         assert(elements.size() > 0);
         RawType absMax = FindAbsMax(elements);
-        m_quantizer = absMax * (1 << extraBits);
+        SymmetricQuantizer(absMax, extraBits);
+    }
+
+    // absoluteMax - the range of the quantizer (normally represents maximum absolute value of the values in the collection to be quantized.
+    // extraBits - see comment in another ctor
+    SymmetricQuantizer(RawType& absoluteMax, const int extraBits)
+    {
+        m_quantizer = absoluteMax * (1 << extraBits);
         if (std::is_same<QuantizedType, short>::value)
         {
             //signed short
